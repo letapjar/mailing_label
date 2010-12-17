@@ -174,6 +174,9 @@
      * function to Print a label
      */
     function AddPdfLabel($texte) {
+        if (($this->countX ==0) and ($this->countY==0)) {
+          $this->AddPage();  
+        }
         $posX = $this->marginLeft+($this->countX*($this->width+$this->xSpace));
         $posY = $this->marginTop+($this->countY*($this->height+$this->ySpace));
         $this->SetXY($posX+3, $posY+3);
@@ -194,12 +197,7 @@
             $this->countX=0;
             $this->countY=0;
         }
-
-        // We are in a new page, then we must add a page
-        if (($this->countX ==0) and ($this->countY==0)) {
-            $this->AddPage();
-        }
-    }
+     }
 
 }
 
