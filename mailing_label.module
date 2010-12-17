@@ -1,0 +1,95 @@
+<?php
+// $Id: mailing_label.module,v 1.4.2.5 2009/10/25 02:05:08 acouch Exp $
+
+
+/**
+* Implementation of hook_views_api().
+*
+*/
+
+function mailing_label_views_api(){
+  return array(
+    'api' => 2,
+  );
+}
+
+
+/**
+* Implementation of hook_form().
+*
+*/
+
+function mailing_label_form($form_state, $results) {
+  $options = array('5160' => t('Avery 5160'), 
+		   '5161' => t('Avery 5161'),
+		   '5162' => t('Avery 5162'),
+		   '5163' => t('Avery 5163'),
+		   '8600' => t('Avery 8600'),
+                   'L7160' => t('Avery L7160'),
+                   'L7161' => t('Avery L7161'),
+                   'L7163' => t('Avery L7163'),
+                  );
+
+  $form['choices'] = array(
+    '#type' => 'select',
+    '#title' => t('Select a mailing label size'),
+    '#options' => $options,
+    '#tree' => TRUE,
+  );
+  $form['description'] = array (
+    '#type' => 'hidden',
+    '#tree' => $results, 
+  );
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Print PDF'));
+
+  return $form;
+}
+
+/**
+* Implementation of hook_form_submit().
+*
+*/
+function mailing_label_form_submit($form, &$form_state) {
+  $results = $form['description']['#tree'];
+  $format = $form_state['values']['choices'];
+  mailing_label_create_label($results, $format);
+
+}
+
+/**
+ * Call hook_form().
+*
+*/
+function mailing_label_pdf_form($results) {
+  return drupal_get_form('mailing_label_form',$results);
+}
+
+/**
+ * Create label function  
+ *
+*/
+function mailing_label_create_label(&$contactRows, &$format) {
+  $path = drupal_get_path('module', 'mailing_label');
+  require_once ($path .  '/mailing_label-ufpdf.php');
+  
+  $pdf = new Mailing_Label_PDF_Label($format,'mm');
+  $pdf->Open();
+  $pdf->AddPage();
+  $pdf->AddFont('DejaVu Sans', '', 'DejaVuSans.php');
+  $pdf->SetFont('DejaVu Sans');
+      
+  //build contact string that needs to be printed
+  $val = null;
+  foreach ($contactRows as $row => $value) {
+    foreach ($value as $k => $v) {
+      $val .= "$v\n";
+    }
+    $pdf->AddPdfLabel($val);
+    $val = '';
+    }
+  $pdf->Output( 'label_' . $format . '.pdf', 'D' );
+  exit;
+}
+
+
+

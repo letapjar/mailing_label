@@ -1,0 +1,15 @@
+;$Id: mailing_label.info,v 1.2.2.1 2009/07/26 00:19:30 acouch Exp $
+
+name = Mailing Labels
+description = PDF Mailing labels using views.
+package = Views
+core = 6.x
+dependencies[] = views
+
+
+; Information added by drupal.org packaging script on 2009-10-25
+version = "6.x-1.1-beta1"
+core = "6.x"
+project = "mailing_label"
+datestamp = "1256436936"
+
