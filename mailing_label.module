@@ -2,6 +2,8 @@
 // $Id: mailing_label.module,v 1.4.2.5 2009/10/25 02:05:08 acouch Exp $
 
 
+$forms = array();
+
 /**
 * Implementation of hook_views_api().
 *
@@ -13,6 +15,19 @@ function mailing_label_views_api(){
   );
 }
 
+/**
+ * Implementation of hook_forms().
+ *
+ * This is necessary when multiple mailing_label forms appear on the same page, each
+ * requiring a separate form_id, but all using the same underlying callbacks.
+ */
+function mailing_label_forms($form_id, $args) {
+global $forms;
+  if (strpos($form_id, 'mailing_label_form_') !== FALSE) {
+      $forms[$form_id] = array('callback' => 'mailing_label_form', 'callback arguments' => $args);
+      return $forms;
+  }
+}
 
 /**
 * Implementation of hook_form().
@@ -41,8 +56,17 @@ function mailing_label_form($form_state, $results) {
     '#tree' => $results, 
   );
   $form['submit'] = array('#type' => 'submit', '#value' => t('Print PDF'));
-
+  $form['#submit'] = array('mailing_label_form_submit',);
+  $form['#validate'][] = 'mailing_label_form_validate';
   return $form;
+}
+
+/**
+* Implementation of hook_form_validate().
+*
+*/
+function mailing_label_form_validate($form, &$form_state){
+
 }
 
 /**
@@ -60,8 +84,8 @@ function mailing_label_form_submit($form, &$form_state) {
  * Call hook_form().
 *
 */
-function mailing_label_pdf_form($results) {
-  return drupal_get_form('mailing_label_form',$results);
+function mailing_label_pdf_form($results,$view) {
+  return drupal_get_form('mailing_label_form'.$view,$results);
 }
 
 /**
