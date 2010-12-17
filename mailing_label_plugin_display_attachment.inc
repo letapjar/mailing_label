@@ -65,7 +65,7 @@ class mailing_label_plugin_display_attachment extends views_plugin_display_attac
    }
     foreach ($view->result as $result) {
         foreach ($view->field as $id => $field) {
-          $x = check_plain(strip_tags(($view->field[$id]->theme($result))))
+          $x = check_plain(strip_tags(($view->field[$id]->theme($result))));
           $results[$i][$id] = $allfields[$id].$x;
         }
     $i++;
