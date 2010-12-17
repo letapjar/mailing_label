@@ -82,7 +82,7 @@ function mailing_label_create_label(&$contactRows, &$format) {
   $val = null;
   foreach ($contactRows as $row => $value) {
     foreach ($value as $k => $v) {
-      $val .= "$v\n";
+     $val=$v;
     }
     $pdf->AddPdfLabel($val);
     $val = '';
