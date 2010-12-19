@@ -2,7 +2,7 @@
 // $Id: mailing_label_plugin_display_attachment.inc,v 1.3.2.3 2009/10/25 00:53:53 acouch Exp $
 
 /**
- * The plugin that handles date navigation attachments.
+ * The plugin that handles mailing label attachments.
  * 
  * Creates a special attachment for this purpose only. 
  */
@@ -30,12 +30,44 @@ class mailing_label_plugin_display_attachment extends views_plugin_display_attac
     $fields = $this->view->display[$current_display]->handler->handlers['field'];
     $view=$this->view;
     $i=0;
+      //catch the inline fields from the defualt view
+   $row_options = $this->view->display[$current_display]->handler->options['row_options'];
+   
+   //if the row options are left as defualts the variable may be null from above so check that and grab default value
+   if (empty($row_options)){
+     $row_options = $this->view->display['default']->handler->options['row_options'];
+   }
+   $allFields = array_keys($fields); //grab labels for all the fields - stuff them in a number indexed array
+   
+   if (!empty($row_options)){ //if there are no inline fields then we do nothing
+       	$inlines=$row_options['inline'];
+   	if (!empty($inlines)){
+   	  //there are inline fields to process so do it
+   	  // find the fields not in the inlines array  these will have to be prepended with newline
+   	  $prepends=array_flip(array_diff_key(array_flip($allFields),$inlines));
+   	  if ($prepends[0]==$allFields[0]){
+   	   $x = array_shift($prepends);//omit the first field since it's not necessary to prepend it
+   	  }
+   	  $allFields=array_flip($allFields);  //flip keys and values so that field names are the keys 
+   	  foreach($allFields as $id=>$new_id){
+   	    if ($new_id==0){
+   	       $new_id='';   //assign the character to prepend to this field
+   	    }
+   	    else{
+   	       $new_id=' '; //use a space between inlined fields
+   	    }
+   	    if (in_array($id,$prepends)){
+   	      $new_id="\n"; //this field should start on a new line so make the prepend a newline character
+   	    }
+   	    $allFields[$id]=$new_id;  //the values of this array are the prepend characters for the result set
+   	  }
+       }
+   }
     foreach ($view->result as $result) {
-      foreach ($result as $rid => $output) {
         foreach ($view->field as $id => $field) {
-          $results[$i][$id] = check_plain(strip_tags(($view->field[$id]->theme($result))));
+          $x = check_plain(strip_tags(($view->field[$id]->theme($result))));
+          $results[$i][$id] = $allfields[$id].$x;
         }
-      }
     $i++;
     }
    
