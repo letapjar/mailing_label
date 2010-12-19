@@ -98,7 +98,6 @@ function mailing_label_create_label(&$contactRows, &$format) {
   
   $pdf = new Mailing_Label_PDF_Label($format,'mm');
   $pdf->Open();
-  $pdf->AddPage();
   $pdf->AddFont('DejaVu Sans', '', 'DejaVuSans.php');
   $pdf->SetFont('DejaVu Sans');
       
