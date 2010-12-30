@@ -73,7 +73,7 @@ class mailing_label_plugin_display_attachment extends views_plugin_display_attac
     $i++;
     }
    
-    return mailing_label_pdf_form($results);
+    return mailing_label_pdf_form($results,$current_display);
   }
 
 
