@@ -2,7 +2,7 @@
 // $Id: mailing_label.module,v 1.4.2.5 2009/10/25 02:05:08 acouch Exp $
 
 
-$forms = array();
+$mailing_label_forms = array();
 
 /**
 * Implementation of hook_views_api().
@@ -22,10 +22,10 @@ function mailing_label_views_api(){
  * requiring a separate form_id, but all using the same underlying callbacks.
  */
 function mailing_label_forms($form_id, $args) {
-global $forms;
+global $mailing_label_forms;
   if (strpos($form_id, 'mailing_label_form_') !== FALSE) {
-      $forms[$form_id] = array('callback' => 'mailing_label_form', 'callback arguments' => $args);
-      return $forms;
+      $mailing_label_forms[$form_id] = array('callback' => 'mailing_label_form', 'callback arguments' => $args);
+      return $mailing_label_forms;
   }
 }
 
@@ -105,7 +105,7 @@ function mailing_label_create_label(&$contactRows, &$format) {
   $val = null;
   foreach ($contactRows as $row => $value) {
     foreach ($value as $k => $v) {
-     $val=$v;
+     $val.=$v;
     }
     $pdf->AddPdfLabel($val);
     $val = '';
