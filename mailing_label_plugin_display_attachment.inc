@@ -17,12 +17,12 @@ class mailing_label_plugin_display_attachment extends views_plugin_display_attac
 
   function options(&$display) {
     parent::options($display);
-    $display->display_options['items_per_page'] = 0;
-    $display->display_options['row_plugin'] = '';
-    $display->display_options['defaults']['style_options'] = FALSE;
-    $display->display_options['defaults']['items_per_page'] = FALSE;
-    $display->display_options['defaults']['row_plugin'] = FALSE;
-    $display->display_options['defaults']['row_options'] = FALSE;
+    $display['display_options']['items_per_page'] = 0;
+    $display['display_options']['row_plugin'] = '';
+    $display['display_options']['defaults']['style_options'] = FALSE;
+    $display['display_options']['defaults']['items_per_page'] = FALSE;
+    $display['display_options']['defaults']['row_plugin'] = FALSE;
+    $display['display_options']['defaults']['row_options'] = FALSE;
   } 
 
   function render() {
@@ -38,12 +38,10 @@ class mailing_label_plugin_display_attachment extends views_plugin_display_attac
      $row_options = $this->view->display['default']->handler->options['row_options'];
    }
    $allFields = array_keys($fields); //grab labels for all the fields - stuff them in a number indexed array
-   
-   if (!empty($row_options)){ //if there are no inline fields then we do nothing
+   if (!empty($row_options)){
        	$inlines=$row_options['inline'];
-   	if (!empty($inlines)){
-   	  //there are inline fields to process so do it
    	  // find the fields not in the inlines array  these will have to be prepended with newline
+   	  //if there are no oinline fields - all but the first field will be prepended with newline
    	  $prepends=array_flip(array_diff_key(array_flip($allFields),$inlines));
    	  if ($prepends[0]==$allFields[0]){
    	   $x = array_shift($prepends);//omit the first field since it's not necessary to prepend it
@@ -61,18 +59,16 @@ class mailing_label_plugin_display_attachment extends views_plugin_display_attac
    	    }
    	    $allFields[$id]=$new_id;  //the values of this array are the prepend characters for the result set
    	  }
-       }
    }
     foreach ($view->result as $result) {
         foreach ($view->field as $id => $field) {
           $x = check_plain(strip_tags(($view->field[$id]->theme($result))));
           if ($fields[$id]->options['exclude']==0){ //only populate the result is the field is not excluded
-            $results[$i][$id] = $allfields[$id].$x;
+            $results[$i][$id] = $allFields[$id].$x;
           }
         }
     $i++;
     }
-   
     return mailing_label_pdf_form($results,$current_display);
   }
 
